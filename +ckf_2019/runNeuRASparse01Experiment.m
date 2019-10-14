@@ -201,6 +201,11 @@ function results = runNeuRASparse01Experiment(dataS, dataV, ...
         W__dataX = dataX.getSubset(1:nSamples);
         W__dataX.changePosUnit('m', true);
         
+        sIdx = startFrame;
+        eIdx = min(length(W__dataX.Hips(:,1)) - 1, endFrame);
+        idx = sIdx:eIdx; idx0 = 1:(eIdx-sIdx+1);
+        allIdx.w__x = idx;
+        
         % debug purposes
         W__xsensBody = W__dataX.togrBody(idx+1, {'name', 'act', 'oriUnit', 'deg', ...
                          'lnSymbol', '-', 'ptSymbol', '*', 'fs', fs, ...

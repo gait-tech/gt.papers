@@ -2,14 +2,14 @@
 % NS2: use yaw offset from Vicon
 %
 % Example:
-%       writetable(results, 'neura-sparse01/explore-v2/results20190812.csv')
-%       writetable(results, 'C:/Users/z5151460/OneDrive - UNSW/Thesis - Sparse Mocap/Goal02-LGCEKF/Analysis-20190924-SE3xR6v3+techpaper/results20190925.csv')
+%       writetable(results, 'neura-sparse01/explore/results20190812.csv')
+%
 
 dir = 'neura-sparse01';
 expDir = sprintf('%s/output', dir);
 
 DEGRANGE = (0:0.1:359) - 180;
-dataList = readtable(sprintf('%s/data-list.csv', dir));
+dataList = readtable('+papers/+ckf_2019/data-list.csv');
 
 options = struct('Pelvis', '00B40B91', ...
     'L_UpLeg', '00B40C45', 'R_UpLeg', '00B40C3C', ...
@@ -18,25 +18,12 @@ options = struct('Pelvis', '00B40B91', ...
 
 results = table();
 
-nsList = {'NS2'};
-
-for nsI = 1:length(nsList)
-    ns = nsList{nsI};
-    
-    setups = {
-    };
-    for sI = [ struct('algo', 'ekfv3', 'pI', -1, 'mI', 76, 'cI', 355) ] 
-        for sdI = {'av03'}
-            for initI = {'w__v'}
-                setups{end+1} = struct('est', sI.algo, ...
-                           'accData', 'w__s', 'oriData', 'w__s', 'accDataNoise', 0, ...
-                           'initSrc', initI, 'stepDetection', sdI, ...
-                           'applyPred', sI.pI, 'applyMeas', sI.mI, ...
-                           'applyCstr', sI.cI, 'P', 0.5, ...
-                           'sigmaQAcc', 1e1, 'sigmaQAngVel', 1e2);
-            end
-        end
-    end
+for ns = ["NS2"]   
+    setups = {struct('est', 'ckf', ...
+                   'accData', 'w__s', 'oriData', 'w__s', 'accDataNoise', 0, ...
+                   'initSrc', 'w__v', 'stepDetection', 'av03', ...
+                   'applyMeas', 76, 'applyCstr', 355, 'P', 0.5, ...
+                   'sigma2QAcc', 1e1^2); };
 
     for i = 1:length(setups)
         setups{i}.label = getLabel(ns, setups{i});
@@ -49,7 +36,8 @@ for nsI = 1:length(nsList)
         n = table2struct(dataList(i, :));
         
         name = sprintf("%s-%s-%s", ns, n.subj, n.act);
-        dataPath = sprintf('%s/mat/%s-%s-%s.mat', dir, ns(1:3), n.subj, n.act);
+        dataPath = sprintf('%s/mat/%s-%s-%s.mat', dir, ...
+                            extractBetween(ns,1,3), n.subj, n.act);
         if exist(dataPath, 'file')
             load(dataPath, 'data');
         else
@@ -58,8 +46,8 @@ for nsI = 1:length(nsList)
                 'fnameX', sprintf('%s/xsens/%s-%s.bvh', dir, n.subj, n.act), ...
                 'fnameS', sprintf('%s/imu/%s-%s', dir, n.subj, n.act), ...
                 'calibFnameSensorYawFixWorldFrame', ...
-                sprintf('%s/calib/%s-Calib-SensorYawFixWorldFrame.txt', ...
-                        dir, n.subj), ...
+                sprintf('%s/calib/%s-%s-Calib-SensorYawFixWorldFrame.txt', ...
+                        dir, n.subj, n.act), ...
                 'calibFnameSensorW2V', ...
                 sprintf('%s/calib/%s-Calib-SensorW2V.txt', dir, n.subj), ...
                 'fnameRevStepDetect', ...
@@ -78,33 +66,16 @@ for nsI = 1:length(nsList)
             data.calibV2W = rotm2quat(mocapdb.loadPendulumCompassMat( ...
                  sprintf('%s/calib/%s-Calib-V2W-Pendulum.mat', dir, n.subj), ...
                  sprintf('%s/calib/%s-Calib-V2W-Compass.mat', dir, n.subj))' );
-            if strcmp(ns(1:3), 'NS1')
-                if exist(data.calibFnameSensorYawFixWorldFrame, 'file')
-                    data.calibYawFix = mocapdb.XsensBody.loadCalibCSV(data.calibFnameSensorYawFixWorldFrame);
-                else
-                    % using ROM calibration
-                    dataS = mocapdb.XsensBody.loadMTExport(sprintf('%s/imu/%s-Trial-Walk-1', dir, n.subj), options);
-                    dataS.fs = 100;           
-                    W__dataV = mocapdb.ViconBody.loadViconMat(sprintf('%s/vicon/%s-Trial-Walk-1.mat', dir, n.subj));
-                    W__dataV.changePosUnit('m', true);
-                    W__dataV = W__dataV.toWorldFrame(data.calibV2W);
-
-                    sIdx = max(W__dataV.getStartIndex()+1, 100);
-
-                    viconCalibSB = dataS.calcCalibSB(W__dataV.togrBody(sIdx+1:sIdx+1, {}), sIdx(1));
-                    data.calibYawFix = dataS.calcCalibAnkleSensorW2PelvisWFromROM(viconCalibSB, DEGRANGE);
-                    data.calibYawFix.saveCalibCSV(data.calibFnameSensorYawFixWorldFrame);
-                end
-            elseif strcmp(ns(1:3), 'NS2')
+            
+            if strcmp(extractBetween(ns,1,3), "NS2")
                 if exist(data.calibFnameSensorYawFixWorldFrame, 'file')
                     data.calibYawFix = mocapdb.XsensBody.loadCalibCSV(data.calibFnameSensorYawFixWorldFrame);
                 else
                     W__dataV = data.dataV.toWorldFrame(data.calibV2W);
                     W__dataV.changePosUnit('m', true);
                     data.calibYawFix = data.dataS.calcCalibAnkleSensorW2PelvisWFromVicon(W__dataV);
-            elseif strcmp(ns(1:3), 'NS3')
-                W__dataX = data.dataX;
-                data.calibYawFix = data.dataS.calcCalibAnkleSensorW2PelvisWFromVicon(W__dataX);
+                    data.calibYawFix.saveCalibCSV(data.calibFnameSensorYawFixWorldFrame);
+                end
             else
                 data.calibYawFix = struct();
                 data.calibYawFix.Pelvis.ori = [1 0 0 0];
@@ -112,70 +83,18 @@ for nsI = 1:length(nsList)
                 data.calibYawFix.R_LowLeg.ori = [1 0 0 0];
             end
 
-            if exist(data.calibFnameSensorW2V, 'file')
-                data.calibW2V = mocapdb.XsensBody.loadCalibCSV(data.calibFnameSensorW2V);
-            else
-                  % using trackingmount calibration
-    %             data.calibW2V = mocapdb.XsensBody.loadCalibSensorW2V( ...
-    %                  sprintf('%s/calib/%s-Calib-SensorW2V.mat', dir, n.subj), ...
-    %                  sprintf('%s/calib/%s-Calib-SensorW2V', dir, n.subj), ...
-    %                  options, 100);
-                  % using ROM calibration
-                dataS = mocapdb.XsensBody.loadMTExport(sprintf('%s/imu/%s-Trial-Walk-1', dir, n.subj), options);
-                dataS.fs = 100;           
-                V__dataV = mocapdb.ViconBody.loadViconMat(sprintf('%s/vicon/%s-Trial-Walk-1.mat', dir, n.subj));
-                V__dataV.changePosUnit('m', true);
-
-                sIdx = max(V__dataV.getStartIndex()+1, 100);
-
-                viconCalibSB = dataS.calcCalibSB(V__dataV.togrBody(sIdx+1:sIdx+1, {}), sIdx(1));
-                data.calibW2V = dataS.calcCalibAnkleSensorW2PelvisWFromROM(viconCalibSB, DEGRANGE);
-                data.calibW2V.saveCalibCSV(data.calibFnameSensorW2V);
-            end
-
-%             if false
-%                 % calculate acc pelvis bias from sitting trial.
-%                 % pelvis bias results to crouch divergence so not using it for now.
-%                 % not 100% tested but it works very well for the static trial
-%                 dataS = mocapdb.XsensBody.loadMTExport(sprintf('%s/imu/%s-Trial-TUG-1', dir, n.subj), options);
-%                 dataS.fs = 100;               
-%                 dataV = mocapdb.ViconBody.loadViconMat(sprintf('%s/vicon/%s-Trial-TUG-1.mat', dir, n.subj));
-%                 dataX = mocapdb.BVHBody.loadXsensBVHFile(sprintf('%s/xsens/%s-Trial-TUG-1.bvh', dir, n.subj), "mm");
-%                 data.bias = experiment.calcNeuRAPelvisAccBias01(dataS, dataV, ...
-%                                         data.calibV2W, data.calibW2V, dataX, ...
-%                                         100, 1000);
-%             elseif false
-%                 % calculate acc pelvis bias from vicon data. Use static trial.
-%                 % pelvis bias results to crouch divergence so not using it for now.
-%                 % not 100% tested but it works very well for the static trial
-%                 dataS = mocapdb.XsensBody.loadMTExport(sprintf('%s/imu/%s-Trial-Static-1', dir, n.subj), options);
-%                 dataS.fs = 100;               
-%                 dataV = mocapdb.ViconBody.loadViconMat(sprintf('%s/vicon/%s-Trial-Static-1.mat', dir, n.subj));
-%                 dataX = mocapdb.BVHBody.loadXsensBVHFile(sprintf('%s/xsens/%s-Trial-Static-1.bvh', dir, n.subj), "mm");
-%                 data.bias = experiment.calcNeuRAPelvisAccBias02(dataS, dataV, ...
-%                                         data.calibV2W, data.calibW2V, dataX, ...
-%                                         1, -1);
-%                 data.bias
-%             else
-                data.bias = struct('w__v', zeros(1, 3), 'v__v', zeros(1, 3), ...
-                          'w__x', zeros(1, 3));
-%             end
-            
+            data.bias = struct('w__v', zeros(1, 3), 'w__x', zeros(1, 3));
             data.revStepDetect = readtable(data.fnameRevStepDetect);
             
             save(dataPath, 'data');
         end
 
-        uwbDistSigma = 0.0;
-        if strcmp(ns(1:3), 'NS2') && (size(ns, 2) > 3)
-            uwbDistSigma = str2double(ns(5:end)); 
-        end
         data.name = name;
         
         fprintf("Data %3d/%3d: %s\n", i, dataN, data.name);
         r = papers.ckf_2019.runNeuRASparse01Experiment(data.dataS, ...
-                data.dataV, data.calibV2W, data.calibYawFix, data.calibW2V, ...
-                data.dataX, data.revStepDetect, uwbDistSigma, ...
+                data.dataV, data.calibV2W, data.calibYawFix, ...
+                data.dataX, data.revStepDetect, ...
                 data.name, setups, expDir, n.startFrame, n.endFrame, data.bias);
         results = [results; struct2table(r)];
     end
@@ -192,6 +111,64 @@ if exist(dataPath, 'file')
 end
 save(sprintf("%s/results.mat", expDir), 'results')
 
+dir = sprintf('%s/explore-v2', dir0);
+ns = 'NS2';
+outDir = 'C:/Users/z5151460/OneDrive - UNSW/Thesis - Sparse Mocap/Goal02-LGCEKF/c3d-viconvsxsens';
+clear results;
+rIdx = 1;
+% rIdx = size(results, 1) + 1;
+% results = table2struct(results);
+
+%% file list vicon vs xsens comparison
+dataList = readtable(sprintf('%s/data-list-v2.csv', dir0));
+dataN = size(dataList, 1);
+
+for i = 1:dataN
+    n = table2struct(dataList(i, :));
+    name = sprintf("%s-%s-%s", ns, n.subj, n.act);
+    load(sprintf("%s/%s-debug.mat", dir, name));
+    
+    sIdx = max(allIdx.w__v(1), allIdx.w__x(1));
+    eIdx = min(allIdx.w__v(end), allIdx.w__x(end));
+    nSamples = eIdx - sIdx + 1;
+    
+    viconIdx0 = find(allIdx.w__v==sIdx,1):find(allIdx.w__v==eIdx,1);
+    xsensIdx0 = find(allIdx.w__x==sIdx,1):find(allIdx.w__x==eIdx,1);
+    
+    csActBody = W__viconBody.getSubset(viconIdx0);
+    estBody = W__xsensBody.getSubset(xsensIdx0);
+       
+    csActBodyRel = csActBody.changeRefFrame('MIDPEL');
+    estBodyRel = estBody.changeRefFrame('MIDPEL');
+    estBody2 = estBodyRel.toWorldFrame(csActBody.MIDPEL, estBody.qRPV);
+    csActBody2 = csActBodyRel.toWorldFrame(csActBody.MIDPEL, csActBody.qRPV);
+    
+    results0a = estBody.diffRMSEandMean(csActBody);
+    results0 = estBody2.diffRMSEandMean(csActBody2);
+    
+    results0.dPosW = results0a.dPos;
+    results0.name = name;
+    results0.label = sprintf("%s+viconvsxsens", ns);
+    results0.runtime = 0;
+    results(rIdx) = results0;
+    rIdx = rIdx + 1;
+    fprintf("%s/%s-%s\n", dir, name, results0.label);
+    
+%     targetname = sprintf('%s/%s-viconvsxsens', outDir, name);
+%     estBody.exportc3d(sprintf('%s.c3d', targetname), struct(), csActBody);
+end
+
+results = struct2table(results);
+dataPath = sprintf("%s/results.mat", dir);
+if exist(dataPath, 'file')
+    newResults = results;
+    load(dataPath);
+    [C, ia, ib] = intersect(results(:,{'name', 'label'}), newResults(:,{'name', 'label'}));
+    results(ia,:) = [];
+    results = [results; newResults];
+end
+save(sprintf("%s/results.mat", dir), 'results')
+
 function label = getLabel(ns, setup)
     if setup.accData == 'v'
         if setup.accDataNoise == 0 
@@ -202,14 +179,9 @@ function label = getLabel(ns, setup)
     else
         aD = setup.accData;
     end
-    if strcmp(setup.est, 'ekfv3')
+    if strcmp(setup.est, 'ckf')
         label = sprintf("%s+A%sO%sI%s+S%s+M%02d+C%03d", ns, aD, ...
             setup.oriData, setup.initSrc, ...
             setup.stepDetection, setup.applyMeas, setup.applyCstr);
-    else
-        label = sprintf("%s+%s+A%sO%sI%s+S%s+P%03d+M%03d+C%03d", ns, setup.est, ...
-            aD, setup.oriData, setup.initSrc, ...
-            setup.stepDetection, setup.applyPred, ...
-            setup.applyMeas, setup.applyCstr);
     end
 end

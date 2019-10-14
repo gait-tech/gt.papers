@@ -10,7 +10,8 @@ expDir = sprintf('%s/output', dir);
 
 DEGRANGE = (0:0.1:359) - 180;
 dataList = readtable('+papers/+ckf_2019/data-list.csv');
-
+dataN = size(dataList, 1);
+    
 options = struct('Pelvis', '00B40B91', ...
     'L_UpLeg', '00B40C45', 'R_UpLeg', '00B40C3C', ...
     'L_LowLeg', '00B40C44', 'R_LowLeg', '00B40C47', ...
@@ -28,8 +29,6 @@ for ns = ["NS2"]
     for i = 1:length(setups)
         setups{i}.label = getLabel(ns, setups{i});
     end
-
-    dataN = size(dataList, 1);
 
 %     for i = 1:dataN
     for i = 31
@@ -100,6 +99,48 @@ for ns = ["NS2"]
     end
 end
 
+rIdx = size(results, 1) + 1;
+results = table2struct(results);
+
+%% file list vicon vs xsens comparison
+% for i = 1:dataN
+for i = 31
+    n = table2struct(dataList(i, :));
+    name = sprintf("%s-%s-%s", ns, n.subj, n.act);
+    load(sprintf("%s/%s-debug.mat", expDir, name));
+    
+    sIdx = max(allIdx.w__v(1), allIdx.w__x(1));
+    eIdx = min(allIdx.w__v(end), allIdx.w__x(end));
+    nSamples = eIdx - sIdx + 1;
+    
+    viconIdx0 = find(allIdx.w__v==sIdx,1):find(allIdx.w__v==eIdx,1);
+    xsensIdx0 = find(allIdx.w__x==sIdx,1):find(allIdx.w__x==eIdx,1);
+    
+    csActBody = W__viconBody.getSubset(viconIdx0);
+    estBody = W__xsensBody.getSubset(xsensIdx0);
+       
+    csActBodyRel = csActBody.changeRefFrame('MIDPEL');
+    estBodyRel = estBody.changeRefFrame('MIDPEL');
+    estBody2 = estBodyRel.toWorldFrame(csActBody.MIDPEL, estBody.qRPV);
+    csActBody2 = csActBodyRel.toWorldFrame(csActBody.MIDPEL, csActBody.qRPV);
+    
+    results0a = estBody.diffRMSEandMean(csActBody);
+    results0 = estBody2.diffRMSEandMean(csActBody2);
+    
+    results0.dPosW = results0a.dPos;
+    results0.name = name;
+    results0.label = sprintf("%s+viconvsxsens", ns);
+    results0.runtime = 0;
+    results(rIdx) = results0;
+    rIdx = rIdx + 1;
+    fprintf("%s/%s-%s\n", expDir, name, results0.label);
+    
+%     targetname = sprintf('%s/%s-viconvsxsens', outDir, name);
+%     estBody.exportc3d(sprintf('%s.c3d', targetname), struct(), csActBody);
+end
+
+results = struct2table(results);
+
 % Append new results
 dataPath = sprintf("%s/results.mat", expDir);
 if exist(dataPath, 'file')
@@ -110,6 +151,7 @@ if exist(dataPath, 'file')
     results = [results; newResults];
 end
 save(sprintf("%s/results.mat", expDir), 'results')
+
 
 function label = getLabel(ns, setup)
     if setup.accData == 'v'
