@@ -5,8 +5,10 @@
 %       writetable(results, 'neura-sparse01/explore/results20190812.csv')
 %
 
-dir = 'neura-sparse01';
+dir = 'data/neura-sparse01';
 expDir = sprintf('%s/output', dir);
+
+DATARANGE = 1:dataN
 
 DEGRANGE = (0:0.1:359) - 180;
 dataList = readtable('+papers/+ckf_2019/data-list.csv');
@@ -30,8 +32,7 @@ for ns = ["NS2"]
         setups{i}.label = getLabel(ns, setups{i});
     end
 
-%     for i = 1:dataN
-    for i = 31
+    for i = DATARANGE
         n = table2struct(dataList(i, :));
         
         name = sprintf("%s-%s-%s", ns, n.subj, n.act);
@@ -103,8 +104,7 @@ rIdx = size(results, 1) + 1;
 results = table2struct(results);
 
 %% file list vicon vs xsens comparison
-% for i = 1:dataN
-for i = 31
+for i = DATARANGE
     n = table2struct(dataList(i, :));
     name = sprintf("%s-%s-%s", ns, n.subj, n.act);
     load(sprintf("%s/%s-debug.mat", expDir, name));
@@ -152,20 +152,9 @@ if exist(dataPath, 'file')
 end
 save(sprintf("%s/results.mat", expDir), 'results')
 
-
-function label = getLabel(ns, setup)
-    if setup.accData == 'v'
-        if setup.accDataNoise == 0 
-            aD = 'v';
-        else
-            aD = strrep(sprintf('v%.1f', setup.accDataNoise), '.', '');
-        end
-    else
-        aD = setup.accData;
-    end
-    if strcmp(setup.est, 'ckf')
-        label = sprintf("%s+A%sO%sI%s+S%s+M%02d+C%03d", ns, aD, ...
-            setup.oriData, setup.initSrc, ...
-            setup.stepDetection, setup.applyMeas, setup.applyCstr);
-    end
+function label = getLabel(ns, setup)    
+    label = sprintf("%s+%s+A%sO%sI%s+S%s+P%03d+M%03d+C%03d", ns, setup.est, ...
+            setup.accData, setup.oriData, setup.initSrc, ...
+            setup.stepDetection, setup.applyPred, ...
+            setup.applyMeas, setup.applyCstr);
 end
