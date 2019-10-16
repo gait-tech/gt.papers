@@ -9,6 +9,7 @@ dir = 'data/neura-sparse01';
 expDir = sprintf('%s/output', dir);
 mkdir(expDir);
 mkdir(sprintf('%s/mat', dir));
+addpath('mod-lib');
 
 DEGRANGE = (0:0.1:359) - 180;
 dataList = readtable('+papers/+ckf_2019/data-list.csv');
