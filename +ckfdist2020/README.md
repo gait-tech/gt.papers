@@ -7,6 +7,8 @@ Supplementary materials will be added here.
 
 ## Sample Videos
 
+Click on the picture and you'll be redicted to the youtube video.
+
 [![](http://img.youtube.com/vi/sWT8i6ulp_g/0.jpg)](https://youtu.be/sWT8i6ulp_g)
 [![](http://img.youtube.com/vi/sRP94Yne8zE/0.jpg)](https://youtu.be/sRP94Yne8zE)
 [![](http://img.youtube.com/vi/pNQ3YKufuYo/0.jpg)](https://youtu.be/pNQ3YKufuYo)

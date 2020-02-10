@@ -9,6 +9,8 @@ In case you are wondering why the folder name is 2019 instead of 2020, it is bec
 
 ## Sample Videos
 
+Click on the picture and you'll be redicted to the youtube video.
+
 [![LGKF 3IMU Sample Walk S10 Average 1080p](http://img.youtube.com/vi/IyZglQGZEZk/0.jpg)](https://youtu.be/IyZglQGZEZk)
 [![LGKF 3IMU Sample Walk S08 Worst 1080p](http://img.youtube.com/vi/VTTwwOIEhB8/0.jpg)](https://youtu.be/VTTwwOIEhB8)
 [![LGKF 3IMU Sample Walk S07 Best 1080p](http://img.youtube.com/vi/YEEnRGM8tXw/0.jpg)](https://youtu.be/YEEnRGM8tXw)
