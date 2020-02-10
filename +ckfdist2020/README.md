@@ -7,7 +7,7 @@ Supplementary materials will be added here.
 
 ## Sample Videos
 
-Click on the picture and you'll be redicted to the youtube video.
+Click on the picture and you'll be redicted to the youtube video OR visit this [youtube playlist](https://www.youtube.com/playlist?list=PLu9_espQRgXUmuI6InUvkgxKjGaYP_DOF)
 
 [![](http://img.youtube.com/vi/sWT8i6ulp_g/0.jpg)](https://youtu.be/sWT8i6ulp_g)
 [![](http://img.youtube.com/vi/sRP94Yne8zE/0.jpg)](https://youtu.be/sRP94Yne8zE)
