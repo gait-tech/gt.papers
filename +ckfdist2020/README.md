@@ -7,6 +7,8 @@ Supplementary materials will be added here.
 
 ## Videos
 
+[![](http://img.youtube.com/vi/sWT8i6ulp_g/0.jpg)](https://youtu.be/sWT8i6ulp_g)
+
 https://youtu.be/sWT8i6ulp_g
 
 https://youtu.be/sRP94Yne8zE
