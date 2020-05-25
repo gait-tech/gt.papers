@@ -20,8 +20,8 @@ addpath('mod-lib');
 %% load data list
 dataList = readtable('+papers/+ckf2019/data-list.csv');
 dataN = size(dataList, 1);
-% DATARANGE = 1:dataN;
-DATARANGE = 31;
+DATARANGE = 1:dataN;
+% DATARANGE = 15;
 
 results = table();
 
