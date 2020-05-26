@@ -1,9 +1,23 @@
 # Estimating Lower Limb Kinematics using Distance Measurements with a Reduced Wearable Inertial Sensor Count
-
-Supplementary materials will be added here.
+[arxiv](http://arxiv.org/abs/2003.102)
 
 ## Citation
-> Luke Sy, Nigel H. Lovell, Stephen J. Redmond (2020). Estimating Lower Limb Kinematics using Distance Measurements with a Reduced Wearable Inertial Sensor Count.
+> Sy, L., Lovell, N. H., & Redmond, S. J. (2020). Estimating Lower Limb Kinematics using Distance Measurements with a Reduced Wearable Inertial Sensor Count. 2020 42nd Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC).e
+
+## Run
+
+Using neuro-sparse data (From 2020 May 25)
+```
+cd <root of gtb>
+papers.ckfdist2020.runAllNeuRASparse01
+```
+
+Using raw neuro-sparse data (Before 2020 May 25). 
+Note that the results presented on the paper was generated using the code for raw data.
+```
+cd <root of gtb>
+papers.ckfdist2020.runAllRawNeuRASparse01
+```
 
 ## Sample Videos
 

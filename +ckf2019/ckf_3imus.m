@@ -399,6 +399,7 @@ function [ xhat_pri, xhat_con, debug_dat ] = ckf_3imus(x0, P0, ...
         
         xhat_con(n, :) = x_tilde;
         P_con(:, :, n)  = P_tilde;
+        debug_dat.fs = fOpt.fs;
         debug_dat.cstrState(n,:) = x_tilde;
         debug_dat.cstrP(:,:,n) = P_tilde;
         

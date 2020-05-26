@@ -6,6 +6,7 @@
 %
 %% configuration
 usebuffer = false; % use buffer in dir/mat if available
+append_results = false; % append results if existing in buffer
 
 %% folder initialization
 dir = 'data/neura-sparse01';
@@ -65,13 +66,15 @@ for i = DATARANGE
 end
 
 % Append new results
-dataPath = sprintf("%s/results.mat", outDir);
-if exist(dataPath, 'file')
-    newResults = results;
-    load(dataPath);
-    [C, ia, ib] = intersect(results(:,{'name', 'label'}), newResults(:,{'name', 'label'}));
-    results(ia,:) = [];
-    results = [results; newResults];
+if append_results
+    dataPath = sprintf("%s/results.mat", outDir);
+    if exist(dataPath, 'file')
+        newResults = results;
+        load(dataPath);
+        [C, ia, ib] = intersect(results(:,{'name', 'label'}), newResults(:,{'name', 'label'}));
+        results(ia,:) = [];
+        results = [results; newResults];
+    end
 end
 save(sprintf("%s/results.mat", outDir), 'results')
 

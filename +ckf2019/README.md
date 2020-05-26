@@ -12,7 +12,9 @@ cd <root of gtb>
 papers.ckf2019.runAllNeuRASparse01
 ```
 
-Using raw neuro-sparse data (Before 2020 May 25)
+Using raw neuro-sparse data (Before 2020 May 25). 
+Note that the results presented on the paper was generated using the code for raw data.
 ```
 cd <root of gtb>
 papers.ckf2019.runAllRawNeuRASparse01
+```
