@@ -2,7 +2,7 @@
 [arxiv](http://arxiv.org/abs/2003.102)
 
 ## Citation
-> Sy, L., Lovell, N. H., & Redmond, S. J. (2020). Estimating Lower Limb Kinematics using Distance Measurements with a Reduced Wearable Inertial Sensor Count. 2020 42nd Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC).e
+> Sy, L., Lovell, N. H., & Redmond, S. J. (2020). Estimating Lower Limb Kinematics using Distance Measurements with a Reduced Wearable Inertial Sensor Count. 2020 42nd Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC).
 
 ## Run
 
