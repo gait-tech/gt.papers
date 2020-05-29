@@ -5,7 +5,7 @@
 See supplementary.pdf and video links below (supplementary materials).
 
 ## Citation
-> Luke Sy, Nigel H. Lovell, Stephen J. Redmond (2020). Estimating Lower Limb Kinematics usinga Lie Group Constrained EKF and a Reduced Wearable IMU Count.
+> Sy, L., Lovell, N. H., & Redmond, S. J. (2020). Estimating Lower Limb Kinematics using a Lie Group Constrained EKF and a Reduced Wearable IMU Count. 2020 8th IEEE International Conference on Biomedical Robotics and Biomechatronics (Biorob).
 
 In case you are wondering why the folder name is 2019 instead of 2020, it is because the first draft of this paper was written in 2019.
 
