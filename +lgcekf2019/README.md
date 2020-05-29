@@ -1,11 +1,21 @@
 # Estimating Lower Limb Kinematics usinga Lie Group Constrained EKF and a Reduced Wearable IMU Count
 
-Supplementary materials will be added here.
+[arxiv](https://arxiv.org/pdf/1910.01808.pdf)
+
+See supplementary.pdf and video links below (supplementary materials).
 
 ## Citation
 > Luke Sy, Nigel H. Lovell, Stephen J. Redmond (2020). Estimating Lower Limb Kinematics usinga Lie Group Constrained EKF and a Reduced Wearable IMU Count.
 
-In case you are wondering why the folder name is 2019 instead of 2020, it is because this paper was first written and submitted as manuscript in 2019.
+In case you are wondering why the folder name is 2019 instead of 2020, it is because the first draft of this paper was written in 2019.
+
+## Run
+
+Using neuro-sparse data (From 2020 May 25)
+```
+cd <root of gtb-toolbox>
+papers.lgcekf2019.runAllNeuRASparse01
+```
 
 ## Sample Videos
 
