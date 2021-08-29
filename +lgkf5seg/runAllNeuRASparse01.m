@@ -23,7 +23,7 @@ addpath('mod-lib/liese3lib');
 %% load data list
 dataList = readtable(sprintf('+papers/+lgkf5seg/data-list-all.csv', dir));
 dataN = size(dataList, 1);
-DATARANGE = 34; % 1:dataN;
+DATARANGE = 1:dataN; % 34
 % MDPI
 % DATARANGE = [14, 30, 43, 44, 47, 52, 66, 110, 130, 137, 140, 149, 162];
 % BioRob

@@ -369,6 +369,8 @@ function results = runRawNeuRASparse01Experiment(dataS, dataV, ...
                                      cs.sim3DistSigma, cs.sim3Dist);
             meas3Dist = readtable(meas3DistFname);
             meas3Dist = meas3Dist(idx,:);
+        else
+            meas3Dist = struct('PV_LA', [], 'PV_RA', [], 'LA_RA', []);
         end
                     
         % if the init position is negative knee angle, allow it
